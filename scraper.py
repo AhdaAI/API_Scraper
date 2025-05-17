@@ -30,17 +30,29 @@ class EpicStore:
             FREE_GAMES = []
 
             for game in data:
-                if game.get("price", {}).get("totalPrice", {}).get("discountPrice") != 0:
+                if game.get("status") != "ACTIVE":
                     continue
 
-                if not game.get("catalogNs", {}).get("mappings"):
+                if game.get("price", {}).get("totalPrice", {}).get("fmtPrice").get("discountPrice") != "0":
+                    continue
+
+                # Check if the game has promotions
+                if not game.get("promotions"):
+                    continue
+
+                # Check if the game has promotional offers
+                if not game.get("promotions", {}).get("promotionalOffers"):
+                    continue
+
+                # Check if the game has a promotional offer with an end date
+                if not game.get("promotions", {}).get("promotionalOffers", [{}])[0].get("promotionalOffers"):
                     continue
 
                 # Extract the product slug from the game data
-                product_slug = game.get("catalogNs", {}).get(
-                    "mappings", [{}])[0].get("pageSlug")
+                product_slug = game.get("productSlug")
                 if not product_slug:
-                    product_slug = game.get("productSlug")
+                    product_slug = game.get("catalogNs", {}).get(
+                        "mappings", [{}])[0].get("pageSlug")
 
                 tall_image = None
                 # Find the image URL for the game
