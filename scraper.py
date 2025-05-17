@@ -18,6 +18,7 @@ class Game:
 class EpicStore:
     def __init__(self):
         self.url = "https://store-site-backend-static-ipv4.ak.epicgames.com/freeGamesPromotions?locale=en-US&country=ID&allowCountries=ID"
+        self.content_url = "https://store-content-ipv4.ak.epicgames.com/api/en-US/content/products/"
 
     def get_free_games(self):
         try:
@@ -76,6 +77,20 @@ class EpicStore:
                 )
                 free_game.end_date = game.get("promotions", {}).get("promotionalOffers", [{}])[
                     0].get("promotionalOffers", [{}])[0].get("endDate")
+
+                # Additional check
+                if free_game.title == free_game.description:
+                    additional_data = requests.get(
+                        f"{self.content_url}{product_slug}?locale=en-US&country=ID&allowCountries=ID"
+                    )
+                    if additional_data.status_code == 200:
+                        additional_data.raise_for_status()
+                        additional_data = additional_data.json()
+                        short_description = additional_data.get("pages", [{}])[0].get(
+                            "data", {}).get("about", {}).get("shortDescription")
+                        if short_description:
+                            free_game.description = short_description
+
                 FREE_GAMES.append(asdict(free_game))
 
             print(f"Fetched {len(FREE_GAMES)} free games.")
