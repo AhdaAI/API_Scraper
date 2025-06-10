@@ -3,3 +3,5 @@ watchdog
 requests
 python-dateutil
 gunicorn
+beautifulsoup4
+html5lib
