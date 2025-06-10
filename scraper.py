@@ -12,7 +12,7 @@ class Game:
     image_url: str
     original_price: int
     discount_price: int
-    end_date: datetime = None
+    end_date: datetime = None  # type: ignore
 
 
 class EpicStore:
@@ -55,7 +55,7 @@ class EpicStore:
                     product_slug = game.get("catalogNs", {}).get(
                         "mappings", [{}])[0].get("pageSlug")
 
-                tall_image = None
+                tall_image = ""
                 # Find the image URL for the game
                 # Check if the game has a key image of type "OfferImageTall" / "Thumbnail"
                 for image_data in game.get("keyImages", []):
